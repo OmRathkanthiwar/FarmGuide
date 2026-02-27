@@ -4,7 +4,7 @@ import { CheckCircle2, ArrowRight, Loader2 } from 'lucide-react';
 import api from '../services/api';
 
 function CropRec() {
-    const [formData, setFormData] = useState({ N_level: '', P_level: '', K_level: '', pH_value: '', moisture: '' });
+    const [formData, setFormData] = useState({ N_level: '', P_level: '', K_level: '', pH_value: '', moisture: '', temperature: '', rainfall: '' });
     const [recommendations, setRecommendations] = useState(null);
     const [loading, setLoading] = useState(false);
 
@@ -63,6 +63,18 @@ function CropRec() {
                                 <label className="block text-xs font-semibold text-emerald-400 uppercase tracking-wider mb-2">pH Level</label>
                                 <input name="pH_value" type="number" step="0.1" onChange={handleChange} required className="input-field" placeholder="0 - 14" />
                             </div>
+                            <div className="relative">
+                                <label className="block text-xs font-semibold text-emerald-400 uppercase tracking-wider mb-2">Temperature</label>
+                                <input name="temperature" type="number" step="0.1" onChange={handleChange} required className="input-field" placeholder="°C" />
+                            </div>
+                            <div className="relative">
+                                <label className="block text-xs font-semibold text-emerald-400 uppercase tracking-wider mb-2">Rainfall</label>
+                                <input name="rainfall" type="number" step="0.1" onChange={handleChange} required className="input-field" placeholder="mm" />
+                            </div>
+                            <div className="relative">
+                                <label className="block text-xs font-semibold text-emerald-400 uppercase tracking-wider mb-2">Humidity</label>
+                                <input name="moisture" type="number" step="0.1" onChange={handleChange} required className="input-field" placeholder="%" />
+                            </div>
                         </div>
 
                         <button type="submit" disabled={loading || recommendations !== null} className="w-full btn-primary text-lg mt-8 flex justify-center items-center">
@@ -90,7 +102,7 @@ function CropRec() {
                             <div className="space-y-4 relative">
                                 <div className="absolute left-4 top-4 bottom-4 w-px bg-emerald-500/20" />
 
-                                {recommendations.map((crop, idx) => (
+                                {recommendations.map((rec, idx) => (
                                     <motion.div
                                         initial={{ opacity: 0, x: 20 }}
                                         animate={{ opacity: 1, x: 0 }}
@@ -100,13 +112,13 @@ function CropRec() {
                                     >
                                         <div className="absolute left-[-5px] top-1/2 -translate-y-1/2 w-[11px] h-[11px] rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.8)]" />
                                         <div className="bg-slate-800/60 border border-slate-700 rounded-xl p-4 flex justify-between items-center group hover:bg-slate-700/60 transition-colors">
-                                            <span className="text-lg font-bold text-white tracking-wide">{crop}</span>
+                                            <span className="text-lg font-bold text-white tracking-wide capitalize">{rec.name || rec}</span>
                                             <div className="text-right">
-                                                <span className="text-sm font-semibold text-emerald-400">{(98 - (idx * 5))}% Match</span>
+                                                <span className="text-sm font-semibold text-emerald-400">{rec.match || 98}% Match</span>
                                                 <div className="w-24 h-1.5 bg-slate-900 rounded-full mt-1 overflow-hidden">
                                                     <motion.div
                                                         initial={{ width: 0 }}
-                                                        animate={{ width: `${98 - (idx * 5)}%` }}
+                                                        animate={{ width: `${rec.match || 98}%` }}
                                                         transition={{ duration: 1, delay: 0.2 + (idx * 0.1) }}
                                                         className="h-full bg-gradient-to-r from-emerald-500 to-teal-400 rounded-full"
                                                     />

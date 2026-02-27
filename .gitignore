@@ -4,3 +4,8 @@ node_modules/
 .DS_Store
 dist/
 build/
+venv/
+__pycache__/
+*.pyc
+*.pkl
+# Crop_recommendation.csv is kept if the user wants it in repo, but usually ignored
