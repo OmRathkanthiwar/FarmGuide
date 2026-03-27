@@ -1,6 +1,5 @@
-import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { AnimatePresence } from 'framer-motion';
 
 import Landing from './pages/Landing';
 import Login from './pages/Login';
@@ -11,8 +10,10 @@ import DiseaseDetect from './pages/DiseaseDetect';
 import MarketPrices from './pages/MarketPrices';
 import Weather from './pages/Weather';
 import ProfitCalculator from './pages/ProfitCalculator';
+import Irrigation from './pages/Irrigation';
+import Schemes from './pages/Schemes';
+import Fertilizer from './pages/Fertilizer';
 import Layout from './components/Layout';
-
 import Chatbot from './components/Chatbot';
 
 function App() {
@@ -20,40 +21,44 @@ function App() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const userInfo = localStorage.getItem('userInfo');
-    if (userInfo) {
-      setUser(JSON.parse(userInfo));
+    try {
+      const userInfo = localStorage.getItem('userInfo');
+      if (userInfo) {
+        setUser(JSON.parse(userInfo));
+      }
+    } catch (e) {
+      console.error("Local storage parsing failed", e);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }, []);
 
-  if (loading) return null;
+  if (loading) return <div className="bg-[#0E1729] min-h-screen text-white flex items-center justify-center">Loading FarmGuide...</div>;
 
   return (
     <Router>
-      <div className="bg-[var(--color-bg-darker)] min-h-screen text-[var(--color-text-main)] font-sans selection:bg-emerald-500/30">
+      <div className="bg-[#0E1729] min-h-screen text-slate-200 font-sans">
         <Routes>
           {/* Public Routes */}
           <Route path="/" element={!user ? <Landing /> : <Navigate to="/dashboard" replace />} />
           <Route path="/login" element={!user ? <Login setAuthUser={setUser} /> : <Navigate to="/dashboard" replace />} />
           <Route path="/register" element={!user ? <Register setAuthUser={setUser} /> : <Navigate to="/dashboard" replace />} />
 
-          {/* Protected Routes Wrapper */}
-          <Route
-            element={user ? <Layout user={user} setUser={setUser}><div /></Layout> : <Navigate to="/login" replace />}
-          >
-            {/* The Layout component wraps its children, but react-router needs nested routes. Let's do a wrapper function below. */}
-          </Route>
-
-          <Route path="/dashboard" element={user ? <Layout user={user} setUser={setUser}><Dashboard /></Layout> : <Navigate to="/login" />} />
-          <Route path="/crop-rec" element={user ? <Layout user={user} setUser={setUser}><CropRec /></Layout> : <Navigate to="/login" />} />
-          <Route path="/disease-detect" element={user ? <Layout user={user} setUser={setUser}><DiseaseDetect /></Layout> : <Navigate to="/login" />} />
-          <Route path="/market-prices" element={user ? <Layout user={user} setUser={setUser}><MarketPrices /></Layout> : <Navigate to="/login" />} />
-          <Route path="/weather" element={user ? <Layout user={user} setUser={setUser}><Weather /></Layout> : <Navigate to="/login" />} />
-          <Route path="/profit" element={user ? <Layout user={user} setUser={setUser}><ProfitCalculator /></Layout> : <Navigate to="/login" />} />
+          {/* Protected Routes directly rendering Layouts */}
+          <Route path="/dashboard" element={user ? <Layout user={user} setUser={setUser}><Dashboard /></Layout> : <Navigate to="/login" replace />} />
+          <Route path="/crop-rec" element={user ? <Layout user={user} setUser={setUser}><CropRec /></Layout> : <Navigate to="/login" replace />} />
+          <Route path="/disease-detect" element={user ? <Layout user={user} setUser={setUser}><DiseaseDetect /></Layout> : <Navigate to="/login" replace />} />
+          <Route path="/market-prices" element={user ? <Layout user={user} setUser={setUser}><MarketPrices /></Layout> : <Navigate to="/login" replace />} />
+          <Route path="/weather" element={user ? <Layout user={user} setUser={setUser}><Weather /></Layout> : <Navigate to="/login" replace />} />
+          <Route path="/profit" element={user ? <Layout user={user} setUser={setUser}><ProfitCalculator /></Layout> : <Navigate to="/login" replace />} />
+          <Route path="/irrigation" element={user ? <Layout user={user} setUser={setUser}><Irrigation /></Layout> : <Navigate to="/login" replace />} />
+          <Route path="/schemes" element={user ? <Layout user={user} setUser={setUser}><Schemes /></Layout> : <Navigate to="/login" replace />} />
+          <Route path="/fertilizer" element={user ? <Layout user={user} setUser={setUser}><Fertilizer /></Layout> : <Navigate to="/login" replace />} />
+          
+          {/* Fallback Catch-all Route */}
+          <Route path="*" element={<Navigate to={user ? "/dashboard" : "/"} replace />} />
         </Routes>
-
-        {/* Global Chatbot Widget (Only show if logged in, or everywhere if you prefer - here we show if logged in to avoid cluttering landing) */}
+        
         {user && <Chatbot />}
       </div>
     </Router>

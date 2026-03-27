@@ -10,10 +10,19 @@ except ImportError:
     Image = None
     io = None
 from fastapi import FastAPI, UploadFile, File
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import json
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Load Price Data
 price_df = None
@@ -22,6 +31,43 @@ try:
     price_df = pd.read_csv('Agriculture_price_dataset.csv')
 except Exception as e:
     print("Warning: Could not load Agriculture_price_dataset.csv:", e)
+
+# Load Weather Normal Data
+weather_df = None
+try:
+    print("Loading historical weather dataset...")
+    weather_df = pd.read_csv('district wise rainfall normal.csv')
+except Exception as e:
+    print("Warning: Could not load district wise rainfall normal.csv:", e)
+
+# Load Govt Schemes Data
+schemes_df = None
+try:
+    print("Loading Government Schemes dataset...")
+    sc_df = pd.read_csv('dataset/schemes.csv')
+    
+    # Fill NAs and force to string for easy searching
+    for col in ['details', 'benefits', 'eligibility', 'schemeCategory', 'tags', 'scheme_name']:
+        if col in sc_df.columns:
+            sc_df[col] = sc_df[col].astype(str).fillna('')
+            
+    # Pre-filter specifically for Agriculture or Farmer related schemes
+    keywords = ['agricultur', 'farm', 'crop', 'kisan', 'krishi', 'rural', 'horticulture', 'irrigation']
+    pattern = '|'.join(keywords)
+    
+    agri_schemes = sc_df[
+        sc_df['details'].str.contains(pattern, case=False) |
+        sc_df['schemeCategory'].str.contains(pattern, case=False) |
+        sc_df['scheme_name'].str.contains(pattern, case=False) |
+        sc_df['tags'].str.contains(pattern, case=False)
+    ].copy()
+    
+    # Drop duplicates and keep the richest 100 schemes
+    agri_schemes = agri_schemes.drop_duplicates(subset=['scheme_name'])
+    schemes_df = agri_schemes.head(100) 
+except Exception as e:
+    print("Warning: Could not load dataset/schemes.csv:", e)
+
 
 # Load the trained model
 try:
@@ -44,6 +90,22 @@ except FileNotFoundError:
     yield_model = None
     area_encoder = None
     item_encoder = None
+
+# Load Cost Model
+try:
+    with open('models/cost_model.pkl', 'rb') as f:
+        cost_model = pickle.load(f)
+except FileNotFoundError:
+    print("Warning: cost_model.pkl not found. Please run train_cost_model.py first.")
+    cost_model = None
+
+# Load Irrigation Model
+try:
+    with open('models/irrigation_model.pkl', 'rb') as f:
+        irrigation_model = pickle.load(f)
+except FileNotFoundError:
+    print("Warning: irrigation_model.pkl not found. Please run train_irrigation_model.py first.")
+    irrigation_model = None
 
 class SoilData(BaseModel):
     N: float
@@ -130,6 +192,129 @@ async def predict_yield(data: YieldData):
         return {
             "success": True,
             "predicted_yield_tons_per_acre": float(predicted_yield)
+        }
+    except Exception as e:
+        return {"success": False, "message": str(e)}
+
+class CostData(BaseModel):
+    crop: str
+    state: str
+
+@app.post("/predict_cost")
+async def predict_cost(data: CostData):
+    if cost_model is None:
+         return {"success": False, "message": "Cost model not loaded on server."}
+    
+    try:
+        # Create a dataframe using EXACT column names 'Crop' and 'State' from training
+        input_data = pd.DataFrame([{
+            'Crop': data.crop,
+            'State': data.state
+        }])
+        
+        # Predict Cost of Cultivation C2 per Hectare
+        predicted_cost_hectare = cost_model.predict(input_data)[0]
+        
+        # Convert Hectare to Acre
+        predicted_cost_acre = predicted_cost_hectare / 2.471
+        
+        return {
+             "success": True,
+             "predicted_cost_per_acre": float(predicted_cost_acre)
+        }
+    except Exception as e:
+        return {"success": False, "message": str(e)}
+
+class IrrigationData(BaseModel):
+    cropType: str
+    cropDays: int
+    soilMoisture: float
+    temperature: float
+    humidity: float
+
+@app.post("/predict_irrigation")
+async def predict_irrigation(data: IrrigationData):
+    if irrigation_model is None:
+        return {"success": False, "message": "Irrigation model not loaded on server."}
+        
+    try:
+        input_data = pd.DataFrame([{
+            'CropType': data.cropType,
+            'CropDays': data.cropDays,
+            'SoilMoisture': data.soilMoisture,
+            'temperature': data.temperature,
+            'Humidity': data.humidity
+        }])
+        
+        prediction = irrigation_model.predict(input_data)[0]
+        # Get probability of class '1' (irrigation needed)
+        probability = irrigation_model.predict_proba(input_data)[0][1]
+        
+        return {
+            "success": True,
+            "irrigation_needed": bool(prediction == 1),
+            "confidence": float(probability * 100)
+        }
+    except Exception as e:
+        return {"success": False, "message": str(e)}
+
+class RiskData(BaseModel):
+    state: str
+    rainfall: float
+    pesticides: float
+    crop: str
+
+@app.post("/predict_risk")
+async def predict_risk(data: RiskData):
+    weatherRisk = 0
+    diseaseRisk = 0
+    priceRisk = 0
+    variance_val = 0
+
+    try:
+        if weather_df is not None:
+            state_query = data.state.upper().strip()
+            state_data = weather_df[weather_df['STATE_UT_NAME'].str.upper().str.strip() == state_query]
+            
+            if not state_data.empty:
+                normal_rainfall = state_data['ANNUAL'].mean()
+            else:
+                normal_rainfall = 1000 # Indian average fallback
+                
+            variance_val = ((data.rainfall - normal_rainfall) / normal_rainfall) * 100
+            
+            if variance_val < -40:
+                weatherRisk = 45 # Severe Drought
+            elif variance_val < -20:
+                weatherRisk = 25 # Mild Drought
+            elif variance_val > 40:
+                weatherRisk = 45 # Severe Flood
+            elif variance_val > 20:
+                weatherRisk = 20 # Moderate Flood
+            else:
+                weatherRisk = 0  # Optimal Conditions (+/- 20% variance is great!)
+        else:
+            if data.rainfall < 500: weatherRisk = 40
+            elif data.rainfall > 2000: weatherRisk = 30
+            
+        if data.pesticides > 100: 
+            diseaseRisk = 5
+        elif data.pesticides < 0.1:
+             diseaseRisk = 25
+        else:
+            diseaseRisk = 12
+            
+        if data.crop.lower() in ['tomato', 'potato', 'onion']:
+            priceRisk = 30
+        else:
+            priceRisk = 10
+            
+        totalRiskScore = min(100, max(0, weatherRisk + diseaseRisk + priceRisk))
+        
+        return {
+            "success": True,
+            "riskScore": totalRiskScore,
+            "variance": variance_val
         }
     except Exception as e:
         return {"success": False, "message": str(e)}
@@ -222,6 +407,76 @@ async def price_trend(request: TrendRequest):
             "recommendation": recommendation,
             "current_price": int(current_price),
             "sma": int(sma)
+        }
+    except Exception as e:
+        return {"success": False, "message": str(e)}
+
+class SchemeQuery(BaseModel):
+    state: str = ""
+    land_size: str = ""
+    gender: str = ""
+    caste: str = ""
+
+@app.post("/schemes/search")
+async def search_schemes(query: SchemeQuery):
+    if schemes_df is None:
+        return {"success": False, "message": "Schemes dataset not loaded on server."}
+        
+    try:
+        results = schemes_df.copy()
+        results['relevance_score'] = 0 # Initialize a ranking score
+        
+        # 1. Strict State Filter
+        if query.state and query.state != "All India":
+            state_search = query.state.lower()
+            results = results[
+                results['details'].str.contains(state_search, case=False) |
+                results['level'].str.contains(state_search, case=False) |
+                results['level'].str.contains('central', case=False)
+            ]
+            
+        # 2. Intelligent Ranking (Bonus points for matching eligibility)
+        if query.land_size:
+            try:
+                acres = float(query.land_size)
+                if acres <= 5.0:  # < 5 acres is Small & Marginal in India
+                    results.loc[results['eligibility'].str.contains('small|marginal|poor', case=False), 'relevance_score'] += 10
+            except ValueError:
+                pass
+                
+        if query.gender and query.gender == "Female":
+            results.loc[results['eligibility'].str.contains('women|female|widow|girl', case=False), 'relevance_score'] += 15
+            
+        if query.caste and query.caste == "SC/ST":
+            results.loc[results['eligibility'].str.contains('sc|st|scheduled|tribe|caste', case=False), 'relevance_score'] += 15
+            
+        # Sort by best matching relevance score, then return the highest 15
+        results = results.sort_values(by='relevance_score', ascending=False)
+        results = results.head(15) 
+        
+        formatted_schemes = []
+        for _, row in results.iterrows():
+            slug = str(row.get("slug", "")).strip()
+            link = f"https://www.myscheme.gov.in/schemes/{slug}" if slug else "https://www.myscheme.gov.in/"
+            
+            clean_details = str(row.get("details", ""))
+            if len(clean_details) > 300:
+                clean_details = clean_details[:300] + "..."
+                
+            formatted_schemes.append({
+                "name": str(row.get("scheme_name", "Unknown Scheme")),
+                "details": clean_details,
+                "benefits": str(row.get("benefits", ""))[:150] + "...",
+                "eligibility": str(row.get("eligibility", ""))[:150] + "...",
+                "category": str(row.get("schemeCategory", "Agriculture & Rural")),
+                "level": str(row.get("level", "Central/State")),
+                "link": link
+            })
+            
+        return {
+            "success": True,
+            "count": len(formatted_schemes),
+            "data": formatted_schemes
         }
     except Exception as e:
         return {"success": False, "message": str(e)}

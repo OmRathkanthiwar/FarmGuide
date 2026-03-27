@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Sprout, Bug, TrendingUp, CloudRain, ChevronRight, Activity, AlertCircle } from 'lucide-react';
+import { Sprout, Bug, TrendingUp, CloudRain, ChevronRight, Activity, AlertCircle, Droplets, Landmark } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import api from '../services/api';
 
@@ -136,6 +136,45 @@ function Dashboard() {
                         </div>
                         <h3 className="text-xl font-bold text-white mb-2">Profit Calc</h3>
                         <p className="text-sm text-slate-400">AI-powered farm financial estimations.</p>
+                    </motion.div>
+                </Link>
+
+                <Link to="/irrigation">
+                    <motion.div variants={itemVariants} className="glass-card p-6 cursor-pointer group h-full hover:border-cyan-500/30 hover:bg-slate-800/80 transition-all">
+                        <div className="flex justify-between items-start mb-4">
+                            <div className="w-12 h-12 rounded-xl bg-cyan-500/20 flex items-center justify-center text-cyan-400 group-hover:scale-110 transition-transform">
+                                <Droplets size={24} />
+                            </div>
+                            <ChevronRight size={20} className="text-slate-500 group-hover:text-cyan-400 group-hover:translate-x-1 transition-all" />
+                        </div>
+                        <h3 className="text-xl font-bold text-white mb-2">Irrigation</h3>
+                        <p className="text-sm text-slate-400">Smart water management and daily scheduling.</p>
+                    </motion.div>
+                </Link>
+
+                <Link to="/schemes">
+                    <motion.div variants={itemVariants} className="glass-card p-6 cursor-pointer group h-full hover:border-purple-500/30 hover:bg-slate-800/80 transition-all">
+                        <div className="flex justify-between items-start mb-4">
+                            <div className="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center text-purple-400 group-hover:scale-110 transition-transform">
+                                <Landmark size={24} />
+                            </div>
+                            <ChevronRight size={20} className="text-slate-500 group-hover:text-purple-400 group-hover:translate-x-1 transition-all" />
+                        </div>
+                        <h3 className="text-xl font-bold text-white mb-2">Govt Schemes</h3>
+                        <p className="text-sm text-slate-400">Browse eligible agricultural grants and policies.</p>
+                    </motion.div>
+                </Link>
+
+                <Link to="/fertilizer">
+                    <motion.div variants={itemVariants} className="glass-card p-6 cursor-pointer group h-full hover:border-pink-500/30 hover:bg-slate-800/80 transition-all">
+                        <div className="flex justify-between items-start mb-4">
+                            <div className="w-12 h-12 rounded-xl bg-pink-500/20 flex items-center justify-center text-pink-400 group-hover:scale-110 transition-transform">
+                                <Activity size={24} />
+                            </div>
+                            <ChevronRight size={20} className="text-slate-500 group-hover:text-pink-400 group-hover:translate-x-1 transition-all" />
+                        </div>
+                        <h3 className="text-xl font-bold text-white mb-2">Fertilizer Calc</h3>
+                        <p className="text-sm text-slate-400">Compute required Urea and DAP based on NPK soil data.</p>
                     </motion.div>
                 </Link>
             </motion.div>

@@ -61,20 +61,30 @@ const calculateProfit = async (req, res) => {
             console.warn("Failed to reach ML price service, using fallback:", e.message);
         }
 
-        // 3. Financial Engine
-        const costBasis = getCropCost(crop);
-        const costPerAcre = Object.values(costBasis).reduce((a, b) => a + b, 0);
-        // Multiply by 80 to convert base USD simulation costs to roughly INR for local relevance
-        const totalCostSub = costPerAcre * areaNum * 80;
+        // 3. Get Predicted Cost of Cultivation from Python ML Service
+        let costPerAcreINR = 33600; // fallback INR
+        try {
+            const costRes = await axios.post('http://127.0.0.1:8000/predict_cost', {
+                crop: crop,
+                state: location
+            });
+            if (costRes.data.success) {
+                costPerAcreINR = costRes.data.predicted_cost_per_acre;
+            }
+        } catch (e) {
+            console.warn("Failed to reach ML cost service, using fallback:", e.message);
+        }
 
-        // Let's ensure exact components are also scaled to INR
+        const totalCostSub = costPerAcreINR * areaNum;
+
+        // Statistically distribute the predicted ML total cost into realistic farming ratios
         const costBreakdown = {
-            seeds: costBasis.seeds * areaNum * 80,
-            fertilizer: costBasis.fertilizer * areaNum * 80,
-            pesticides: costBasis.pesticides * areaNum * 80,
-            labor: costBasis.labor * areaNum * 80,
-            irrigation: costBasis.irrigation * areaNum * 80,
-            misc: costBasis.misc * areaNum * 80
+            seeds: totalCostSub * 0.12,
+            fertilizer: totalCostSub * 0.18,
+            pesticides: totalCostSub * 0.08,
+            labor: totalCostSub * 0.40,
+            irrigation: totalCostSub * 0.12,
+            misc: totalCostSub * 0.10
         };
 
         const totalRevenue = totalYieldTons * pricePerTon;
@@ -82,19 +92,21 @@ const calculateProfit = async (req, res) => {
         const breakEvenPrice = totalCostSub / totalYieldTons;
         const profitMargin = (netProfit / totalRevenue) * 100;
 
-        // 4. Risk Scoring Engine (0 - 100 Scale)
-        // Simulate risk based on external factors
-        let weatherRisk = 0;
-        if (parseFloat(rainfall) < 500) weatherRisk = 40; // Drought
-        if (parseFloat(rainfall) > 2000) weatherRisk = 30; // Flood
-
-        let diseaseRisk = parseFloat(pesticides_tonnes) > 100 ? 10 : 30; // High pesticides = low current disease risk but bad for soil
-
-        // Base volatility on crop type (simulated)
-        const priceVolatileCrops = ['tomato', 'potato'];
-        const priceRisk = priceVolatileCrops.includes(crop.toLowerCase()) ? 30 : 10;
-
-        const totalRiskScore = Math.min(100, Math.max(0, weatherRisk + diseaseRisk + priceRisk));
+        // 4. AI-Driven Weather & Volatility Risk Engine (0 - 100)
+        let totalRiskScore = 30; // fallback rating
+        try {
+            const riskRes = await axios.post('http://127.0.0.1:8000/predict_risk', {
+                state: location,
+                rainfall: parseFloat(rainfall),
+                pesticides: parseFloat(pesticides_tonnes),
+                crop: crop
+            });
+            if (riskRes.data.success) {
+                totalRiskScore = riskRes.data.riskScore;
+            }
+        } catch (e) {
+            console.warn("Failed to reach ML risk service, using fallback:", e.message);
+        }
 
         let profitabilityCategory = 'Low';
         if (profitMargin > 40) profitabilityCategory = 'High';

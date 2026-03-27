@@ -1,5 +1,6 @@
 import os
 import tensorflow as tf
+import kagglehub
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.applications import MobileNetV2
 from tensorflow.keras.layers import Dense, GlobalAveragePooling2D, Dropout
@@ -8,21 +9,17 @@ from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 
 # Define paths
-dataset_path = 'dataset/PlantVillage/PlantVillage'
 model_path = 'models/disease_model.h5'
 
-# Check if dataset exists
-if not os.path.exists(dataset_path):
-    print(f"Error: Dataset not found at {dataset_path}")
-    print("Please ensure you have downloaded and extracted the PlantVillage dataset.")
-    exit()
+print("Locating the full PlantVillage dataset local folders...")
+dataset_path = 'dataset/plantvillage dataset/color'
 
-print(f"Found Dataset at {dataset_path}")
+print(f"Dataset successfully loaded from: {dataset_path}")
 
 # Hyperparameters
 IMG_SIZE = (224, 224)
 BATCH_SIZE = 32
-EPOCHS = 10 # Keep it relatively low for a standard laptop to complete
+EPOCHS = 3 # Kept low for laptop CPU since we now have 38 classes & 54,000 images
 
 print("Setting up ImageDataGenerators...")
 # We use a validation split to train and validate on the same folder

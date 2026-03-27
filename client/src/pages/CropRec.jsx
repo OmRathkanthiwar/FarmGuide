@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CheckCircle2, ArrowRight, Loader2 } from 'lucide-react';
+import { CheckCircle2, Loader2 } from 'lucide-react';
 import api from '../services/api';
 
 function CropRec() {
@@ -39,10 +39,6 @@ function CropRec() {
                     animate={{ opacity: 1, x: 0 }}
                     className="glass-panel p-8 relative overflow-hidden"
                 >
-                    <div className="absolute top-0 right-0 p-4 opacity-10 pointer-events-none">
-                        <ArrowRight size={120} />
-                    </div>
-
                     <h3 className="text-xl font-bold text-white mb-6">Soil Parameters</h3>
 
                     <form onSubmit={handleSubmit} className="space-y-5 relative z-10">

@@ -120,21 +120,21 @@ function ProfitCalculator() {
                                     <label className="block text-xs font-bold text-slate-400 mb-1 uppercase">Crop Identifier</label>
                                     <div className="relative">
                                         <Leaf className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={16} />
-                                        <input type="text" name="crop" placeholder="e.g., Rice, Wheat" className="input-field pl-10 text-sm" value={formData.crop} onChange={handleChange} required />
+                                        <input type="text" name="crop" placeholder="e.g., Rice, Wheat" className="input-field !pl-10 text-sm" value={formData.crop} onChange={handleChange} required />
                                     </div>
                                 </div>
                                 <div className="col-span-1">
                                     <label className="block text-xs font-bold text-slate-400 mb-1 uppercase">Land Area (Acres)</label>
                                     <div className="relative">
                                         <Map className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={16} />
-                                        <input type="number" name="area" step="0.1" placeholder="e.g., 5" className="input-field pl-10 text-sm" value={formData.area} onChange={handleChange} required />
+                                        <input type="number" name="area" step="0.1" placeholder="e.g., 5" className="input-field !pl-10 text-sm" value={formData.area} onChange={handleChange} required />
                                     </div>
                                 </div>
                                 <div className="col-span-1">
-                                    <label className="block text-xs font-bold text-slate-400 mb-1 uppercase">Country/Region</label>
+                                    <label className="block text-xs font-bold text-slate-400 mb-1 uppercase">State</label>
                                     <div className="relative">
                                         <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={16} />
-                                        <input type="text" name="location" placeholder="e.g., India" className="input-field pl-10 text-sm" value={formData.location} onChange={handleChange} required />
+                                        <input type="text" name="location" placeholder="e.g., Punjab" className="input-field !pl-10 text-sm" value={formData.location} onChange={handleChange} required />
                                     </div>
                                 </div>
                             </div>
@@ -146,21 +146,21 @@ function ProfitCalculator() {
                                     <label className="block text-xs font-bold text-slate-400 mb-1 uppercase">Rainfall (mm/year)</label>
                                     <div className="relative">
                                         <CloudRain className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={16} />
-                                        <input type="number" name="rainfall" step="0.1" placeholder="e.g., 1200" className="input-field pl-10 text-sm" value={formData.rainfall} onChange={handleChange} required />
+                                        <input type="number" name="rainfall" step="0.1" placeholder="e.g., 1200" className="input-field !pl-10 text-sm" value={formData.rainfall} onChange={handleChange} required />
                                     </div>
                                 </div>
                                 <div className="col-span-1">
                                     <label className="block text-xs font-bold text-slate-400 mb-1 uppercase">Pesticides (Tonnes)</label>
                                     <div className="relative">
                                         <ShieldAlert className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={16} />
-                                        <input type="number" name="pesticides_tonnes" step="0.01" placeholder="e.g., 1.5" className="input-field pl-10 text-sm" value={formData.pesticides_tonnes} onChange={handleChange} required />
+                                        <input type="number" name="pesticides_tonnes" step="0.01" placeholder="e.g., 1.5" className="input-field !pl-10 text-sm" value={formData.pesticides_tonnes} onChange={handleChange} required />
                                     </div>
                                 </div>
                                 <div className="col-span-1">
                                     <label className="block text-xs font-bold text-slate-400 mb-1 uppercase">Avg Temp (°C)</label>
                                     <div className="relative">
                                         <Thermometer className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={16} />
-                                        <input type="number" name="avg_temp" step="0.1" placeholder="e.g., 25.5" className="input-field pl-10 text-sm" value={formData.avg_temp} onChange={handleChange} required />
+                                        <input type="number" name="avg_temp" step="0.1" placeholder="e.g., 25.5" className="input-field !pl-10 text-sm" value={formData.avg_temp} onChange={handleChange} required />
                                     </div>
                                 </div>
                             </div>
