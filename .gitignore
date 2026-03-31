@@ -14,3 +14,4 @@ ml/dataset/
 *.csv
 *.h5
 ml/models/
+tmp/
