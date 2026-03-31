@@ -1,7 +1,12 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+ adding_pest_pred
 import { Sprout, Bug, TrendingUp, CloudRain, ChevronRight, Activity, AlertCircle, Droplets, Landmark, AlertTriangle } from 'lucide-react';
+
+import { Sprout, Bug, TrendingUp, CloudRain, ChevronRight, Activity, AlertCircle, Droplets, Landmark } from 'lucide-react';
+
+ main
 import api from '../services/api';
 
 function Dashboard() {
@@ -194,7 +199,10 @@ function Dashboard() {
                 </Link>
             </motion.div>
 
+ adding_pest_pred
 
+
+ main
 
             {/* Footer Metric Bar */}
             <footer className="glass-panel rounded-2xl px-8 py-4 flex items-center justify-between mb-8">
