@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Sprout, Bug, TrendingUp, CloudRain, ChevronRight, Activity, AlertCircle, Droplets, Landmark } from 'lucide-react';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+
 import api from '../services/api';
 
 function Dashboard() {
@@ -155,7 +155,6 @@ function Dashboard() {
                             <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
                                 <Landmark size={28} />
                             </div>
-                            <div className="bg-primary-container/20 text-primary text-[10px] font-bold px-2 py-1 rounded-lg uppercase tracking-wider">Active Policy Support</div>
                         </div>
                         <div>
                             <h3 className="font-headline text-lg font-bold text-on-surface">Govt Schemes</h3>
@@ -180,75 +179,6 @@ function Dashboard() {
                 </Link>
             </motion.div>
 
-            {/* Chart Section */}
-            <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
-                className="glass-panel rounded-[2.5rem] p-8 min-h-[400px] flex flex-col mb-10"
-            >
-                {loading ? (
-                    <div className="flex-1 flex flex-col items-center justify-center">
-                        <div className="animate-spin rounded-full h-14 w-14 border-t-2 border-b-2 border-primary"></div>
-                        <p className="text-on-surface-variant text-sm mt-4">Initializing Data Stream...</p>
-                    </div>
-                ) : !trendMetrics ? (
-                    <div className="glass-card flex-1 rounded-3xl border border-white/5 flex flex-col items-center justify-center relative overflow-hidden group">
-                        <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, #78dc77 1px, transparent 0)', backgroundSize: '40px 40px' }}></div>
-                        <div className="relative z-10 text-center">
-                            <div className="w-20 h-20 bg-primary/5 rounded-full flex items-center justify-center mb-4 mx-auto border border-primary/20 group-hover:scale-110 transition-transform duration-500">
-                                <TrendingUp size={40} className="text-primary/40" />
-                            </div>
-                            <h4 className="text-on-surface font-headline text-xl font-bold">Awaiting Market Data</h4>
-                            <p className="text-on-surface-variant text-sm mt-2 max-w-xs mx-auto">Real-time commodity streams are temporarily unavailable. Initializing fallback diagnostic...</p>
-                        </div>
-                    </div>
-                ) : (
-                    <>
-                        <div className="flex items-center justify-between mb-8">
-                            <div>
-                                <h3 className="font-headline text-2xl font-bold text-on-surface flex items-center gap-3">
-                                    Wheat Price Terminal
-                                    <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border ${
-                                        trendMetrics.volatility === 'Stable' 
-                                        ? "bg-primary/10 border-primary/30 text-primary" 
-                                        : "bg-yellow-500/10 border-yellow-500/30 text-yellow-500"
-                                    }`}>
-                                        {trendMetrics.volatility}
-                                    </span>
-                                </h3>
-                                <p className="text-on-surface-variant text-sm mt-1">Multi-spectral commodity trends and SMA diagnostic</p>
-                            </div>
-                            <div className="text-right">
-                                <p className="text-primary text-xs font-bold uppercase tracking-widest mb-1">{trendMetrics.recommendation}</p>
-                                <p className="text-3xl font-headline font-bold text-on-surface">₹{trendMetrics.current}</p>
-                            </div>
-                        </div>
-
-                        <div className="glass-card flex-1 h-80 rounded-3xl border border-white/5 relative overflow-hidden">
-                            <div className="absolute inset-0 opacity-5" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, #78dc77 1px, transparent 0)', backgroundSize: '30px 30px' }}></div>
-                            <ResponsiveContainer width="100%" height="100%">
-                                <AreaChart data={trendData} margin={{ top: 20, right: 20, left: 0, bottom: 0 }}>
-                                    <defs>
-                                        <linearGradient id="colorPrice" x1="0" y1="0" x2="0" y2="1">
-                                            <stop offset="5%" stopColor="#78dc77" stopOpacity={0.3} />
-                                            <stop offset="95%" stopColor="#78dc77" stopOpacity={0} />
-                                        </linearGradient>
-                                    </defs>
-                                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
-                                    <XAxis dataKey="name" hide />
-                                    <YAxis hide domain={['auto', 'auto']} />
-                                    <Tooltip
-                                        contentStyle={{ backgroundColor: '#10150f', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', fontSize: '12px' }}
-                                        itemStyle={{ color: '#78dc77' }}
-                                    />
-                                    <Area type="monotone" dataKey="price" stroke="#78dc77" strokeWidth={3} fillOpacity={1} fill="url(#colorPrice)" />
-                                </AreaChart>
-                            </ResponsiveContainer>
-                        </div>
-                    </>
-                )}
-            </motion.div>
 
             {/* Footer Metric Bar */}
             <footer className="glass-panel rounded-2xl px-8 py-4 flex items-center justify-between mb-8">

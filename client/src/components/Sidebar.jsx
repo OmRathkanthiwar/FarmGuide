@@ -32,7 +32,6 @@ const Sidebar = ({ user, setUser }) => {
                     </div>
                     <div>
                         <h1 className="text-lg font-black text-primary leading-none">FarmGuide</h1>
-                        <p className="text-[10px] uppercase tracking-widest text-on-surface-variant/50 mt-1">Digital Agronomist</p>
                     </div>
                 </div>
 
