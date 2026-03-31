@@ -91,10 +91,17 @@ const detectDisease = async (req, res) => {
             try {
                 if (process.env.GEMINI_API_KEY) {
                     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-                    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-                    const prompt = `A farmer's crop was just diagnosed with ${detectedDisease} by a CNN model. Provide a very concise, practical, and direct treatment recommendation. Example format: "Spray Mancozeb 2 grams per liter in the evening. Repeat after 7 days." Keep it to 1 or 2 sentences max.`;
-
-                    const result = await model.generateContent(prompt);
+                    let result;
+                    try {
+                        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
+                        const prompt = `A farmer's crop was just diagnosed with ${detectedDisease} by a CNN model. Provide a very concise, practical, and direct treatment recommendation. Example format: "Spray Mancozeb 2 grams per liter in the evening. Repeat after 7 days." Keep it to 1 or 2 sentences max.`;
+                        result = await model.generateContent(prompt);
+                    } catch (primaryModelError) {
+                        console.warn("Gemini 1.5-flash-latest not found or failed, trying gemini-pro fallback...");
+                        const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+                        const prompt = `A farmer's crop was just diagnosed with ${detectedDisease} by a CNN model. Provide a very concise, practical, and direct treatment recommendation. Example format: "Spray Mancozeb 2 grams per liter in the evening. Repeat after 7 days." Keep it to 1 or 2 sentences max.`;
+                        result = await model.generateContent(prompt);
+                    }
                     const responseText = result.response.text();
 
                     if (responseText) {
