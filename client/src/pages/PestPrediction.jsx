@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShieldAlert, Leaf, Thermometer, Droplets, CloudRain, Wind, FlaskConical, AlertTriangle, CheckCircle2, XCircle, ChevronDown } from 'lucide-react';
+import { AlertTriangle, Leaf, Thermometer, Droplets, CloudRain, Wind, FlaskConical, CheckCircle2, XCircle, ChevronDown, ShieldAlert } from 'lucide-react';
 
 const PEST_DATA = {
   wheat: {
@@ -126,16 +126,16 @@ export default function PestPrediction() {
   };
 
   return (
-    <div className="w-full max-w-5xl mx-auto">
+    <div className="w-full max-w-5xl mx-auto pb-20">
       {/* Header */}
       <section className="mb-8 mt-4">
         <div className="flex items-center gap-3 mb-2">
-          <div className="w-12 h-12 rounded-2xl bg-red-500/10 flex items-center justify-center">
-            <ShieldAlert size={26} className="text-red-400" />
+          <div className="w-12 h-12 rounded-2xl bg-orange-500/10 flex items-center justify-center">
+            <AlertTriangle size={26} className="text-orange-400" />
           </div>
           <div>
             <h2 className="font-headline text-3xl font-bold text-on-surface tracking-tight">
-              Pest <span className="text-red-400" style={{ textShadow: '0 0 20px rgba(248,113,113,0.4)' }}>Prediction</span>
+              Pest <span className="text-orange-400" style={{ textShadow: '0 0 20px rgba(251,146,60,0.4)' }}>Prediction</span>
             </h2>
             <p className="text-on-surface-variant text-sm">AI-powered pest & disease risk assessment for your crop</p>
           </div>
@@ -152,7 +152,7 @@ export default function PestPrediction() {
           className="lg:col-span-2 glass-panel rounded-3xl p-6 flex flex-col gap-5"
         >
           <h3 className="font-headline text-lg font-bold text-on-surface flex items-center gap-2">
-            <FlaskConical size={18} className="text-red-400" /> Field Parameters
+            <FlaskConical size={18} className="text-orange-400" /> Field Parameters
           </h3>
 
           {/* Crop Select */}
@@ -165,7 +165,7 @@ export default function PestPrediction() {
                 name="crop"
                 value={form.crop}
                 onChange={handleChange}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-on-surface appearance-none pr-10 focus:outline-none focus:border-red-400/50"
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-on-surface appearance-none pr-10 focus:outline-none focus:border-orange-400/50"
               >
                 <option value="wheat">Wheat</option>
                 <option value="rice">Rice</option>
@@ -184,7 +184,7 @@ export default function PestPrediction() {
                 name="season"
                 value={form.season}
                 onChange={handleChange}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-on-surface appearance-none pr-10 focus:outline-none focus:border-red-400/50"
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-on-surface appearance-none pr-10 focus:outline-none focus:border-orange-400/50"
               >
                 <option value="kharif">Kharif (Jun–Oct)</option>
                 <option value="rabi">Rabi (Nov–Apr)</option>
@@ -207,7 +207,7 @@ export default function PestPrediction() {
               placeholder="e.g. 30"
               required
               min={0} max={55}
-              className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-on-surface placeholder-on-surface-variant/40 focus:outline-none focus:border-red-400/50"
+              className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-on-surface placeholder-on-surface-variant/40 focus:outline-none focus:border-orange-400/50"
             />
           </div>
 
@@ -224,7 +224,7 @@ export default function PestPrediction() {
               placeholder="e.g. 65"
               required
               min={0} max={100}
-              className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-on-surface placeholder-on-surface-variant/40 focus:outline-none focus:border-red-400/50"
+              className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-on-surface placeholder-on-surface-variant/40 focus:outline-none focus:border-orange-400/50"
             />
           </div>
 
@@ -241,7 +241,7 @@ export default function PestPrediction() {
               placeholder="e.g. 120"
               required
               min={0}
-              className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-on-surface placeholder-on-surface-variant/40 focus:outline-none focus:border-red-400/50"
+              className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-on-surface placeholder-on-surface-variant/40 focus:outline-none focus:border-orange-400/50"
             />
           </div>
 
@@ -257,7 +257,7 @@ export default function PestPrediction() {
               onChange={handleChange}
               placeholder="e.g. 15"
               min={0}
-              className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-on-surface placeholder-on-surface-variant/40 focus:outline-none focus:border-red-400/50"
+              className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-on-surface placeholder-on-surface-variant/40 focus:outline-none focus:border-orange-400/50"
             />
           </div>
 
@@ -266,7 +266,7 @@ export default function PestPrediction() {
             whileTap={{ scale: 0.98 }}
             type="submit"
             disabled={loading}
-            className="mt-2 w-full py-3 rounded-xl font-bold text-sm bg-gradient-to-r from-red-500 to-orange-500 text-white shadow-[0_4px_20px_rgba(239,68,68,0.35)] disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            className="mt-2 w-full py-3 rounded-xl font-bold text-sm bg-gradient-to-r from-orange-500 to-red-600 text-white shadow-[0_4px_20px_rgba(249,115,22,0.35)] disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             {loading ? (
               <>
@@ -274,7 +274,7 @@ export default function PestPrediction() {
                 Analyzing Field Data...
               </>
             ) : (
-              <><ShieldAlert size={16} /> Predict Pest Risks</>
+              <><AlertTriangle size={16} /> Predict Pest Risks</>
             )}
           </motion.button>
         </motion.form>
@@ -290,11 +290,11 @@ export default function PestPrediction() {
                 exit={{ opacity: 0 }}
                 className="glass-panel rounded-3xl p-10 flex flex-col items-center justify-center text-center h-full min-h-[400px]"
               >
-                <div className="w-20 h-20 rounded-full bg-red-400/10 flex items-center justify-center mb-4">
-                  <ShieldAlert size={36} className="text-red-400/50" />
+                <div className="w-20 h-20 rounded-full bg-orange-400/10 flex items-center justify-center mb-4">
+                  <ShieldAlert size={36} className="text-orange-400/50" />
                 </div>
                 <p className="text-on-surface-variant font-body text-sm max-w-xs">
-                  Fill in your field parameters and click <span className="text-red-400 font-bold">Predict Pest Risks</span> to get AI-driven pest & disease assessment.
+                  Fill in your field parameters and click <span className="text-orange-400 font-bold">Predict Pest Risks</span> to get AI-driven pest & disease assessment.
                 </p>
               </motion.div>
             )}
@@ -308,10 +308,10 @@ export default function PestPrediction() {
                 className="glass-panel rounded-3xl p-10 flex flex-col items-center justify-center text-center h-full min-h-[400px] gap-4"
               >
                 <div className="relative w-20 h-20">
-                  <div className="absolute inset-0 rounded-full border-4 border-red-400/20 animate-ping" />
-                  <div className="absolute inset-2 rounded-full border-4 border-t-red-400 border-r-transparent border-b-transparent border-l-transparent animate-spin" />
-                  <div className="absolute inset-5 rounded-full bg-red-400/20 flex items-center justify-center">
-                    <ShieldAlert size={18} className="text-red-400" />
+                  <div className="absolute inset-0 rounded-full border-4 border-orange-400/20 animate-ping" />
+                  <div className="absolute inset-2 rounded-full border-4 border-t-orange-400 border-r-transparent border-b-transparent border-l-transparent animate-spin" />
+                  <div className="absolute inset-5 rounded-full bg-orange-400/20 flex items-center justify-center">
+                    <ShieldAlert size={18} className="text-orange-400" />
                   </div>
                 </div>
                 <p className="text-on-surface-variant text-sm">Running pest risk analysis...</p>
@@ -334,7 +334,7 @@ export default function PestPrediction() {
                   </div>
                   <div className="text-right">
                     <p className="text-xs text-on-surface-variant">Pests identified</p>
-                    <p className="text-3xl font-black text-red-400">{results.pests.length}</p>
+                    <p className="text-3xl font-black text-orange-400">{results.pests.length}</p>
                   </div>
                 </div>
 
@@ -377,7 +377,7 @@ export default function PestPrediction() {
                         >
                           <div className="px-6 pb-5 flex flex-col gap-3 border-t border-white/10 pt-4">
                             <div>
-                              <p className="text-xs font-bold text-red-400 uppercase tracking-wider mb-1">💊 Treatment</p>
+                              <p className="text-xs font-bold text-orange-400 uppercase tracking-wider mb-1">💊 Treatment</p>
                               <p className="text-sm text-on-surface-variant leading-relaxed">{pest.treatment}</p>
                             </div>
                             <div>
